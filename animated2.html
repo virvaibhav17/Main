@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Circles — Mouse Follow</title>
+  <style>
+    :root {
+      --bg-dark: #000;
+      --bg-light: #f1f5f9;
+      --circle-dark: rgb(0, 255, 13);
+      --circle-light: rgb(34, 197, 94);
+      --sparkle-dark: rgba(0, 255, 13, 0.6);
+      --sparkle-light: rgba(34, 197, 94, 0.5);
+      --move: 40vmin;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-dark);
+      transition: background 0.8s ease;
+    }
+    body[data-theme='light'] {
+      background: var(--bg-light);
+    }
+
+    #themeToggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: 2.6rem;
+      height: 2.6rem;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      z-index: 10;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+    body[data-theme='light'] #themeToggle {
+      color: #000;
+    }
+    #themeToggle:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    #backBtn {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      z-index: 10;
+      transition: background 0.3s ease;
+    }
+    #backBtn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    body[data-theme='light'] #backBtn {
+      color: #000;
+    }
+
+    .container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+      pointer-events: none;
+    }
+
+    .circle {
+      position: absolute;
+      width: calc((var(--i) + 1) * 2.5vmin);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: transparent;
+      border: 3px solid var(--circle-dark);
+      box-shadow: 0 0 15px var(--circle-dark), inset 0 0 15px var(--circle-dark);
+      transform-style: preserve-3d;
+      transform: rotateX(70deg) translateZ(50px);
+      animation: rise 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) calc(var(--i) * 0.08s) infinite;
+      will-change: transform, filter;
+    }
+    body[data-theme='light'] .circle {
+      border-color: var(--circle-light);
+      box-shadow: 0 0 12px var(--circle-light), inset 0 0 12px var(--circle-light);
+    }
+
+    @keyframes rise {
+      0%,
+      100% {
+        transform: rotateX(70deg) translateZ(50px) translateY(0);
+        filter: hue-rotate(0deg);
+      }
+      50% {
+        transform: rotateX(70deg) translateZ(50px) translateY(calc(-1 * var(--move)));
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    .sparkles .sparkle {
+      position: absolute;
+      border-radius: 50%;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, var(--sparkle-dark) 0%, rgba(0, 0, 0, 0) 70%);
+      filter: blur(60px);
+      mix-blend-mode: overlay;
+      animation: sparkleMove 10s ease-in-out infinite alternate;
+    }
+    body[data-theme='light'] .sparkles .sparkle {
+      background: radial-gradient(circle, var(--sparkle-light) 0%, rgba(0, 0, 0, 0) 70%);
+    }
+
+    .sparkle.s1 { top: -80px; left: -60px; animation-delay: 0s; }
+    .sparkle.s2 { bottom: -90px; right: -50px; width: 320px; height: 320px; animation-delay: 3s; }
+    .sparkle.s3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; animation-delay: 6s; }
+
+    @keyframes sparkleMove {
+      0%   { transform: translateY(0) translateX(0) scale(1); }
+      100% { transform: translateY(40px) translateX(30px) scale(1.2); }
+    }
+
+    @media (max-width: 600px) {
+      :root { --move: 25vmin; }
+      .circle { width: calc((var(--i) + 1) * 3vw); }
+      .sparkles .sparkle { width: 180px; height: 180px; filter: blur(40px); }
+      .sparkle.s2 { width: 220px; height: 220px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <button id="themeToggle" aria-label="Toggle dark/light theme">🌙</button>
+  <button id="backBtn" onclick="window.location.href="file:///C:/Users/Rushabh/Desktop/website/meanscreen.html">Back to Home</butto>
+  <div class="sparkles">
+    <div class="sparkle s1"></div>
+    <div class="sparkle s2"></div>
+    <div class="sparkle s3"></div>
+  </div>
+  <div class="container"></div>
+
+  <script>
+    const container = document.querySelector('.container');
+    for (let i = 0; i <= 20; i++) {
+      const c = document.createElement('div');
+      c.className = 'circle';
+      c.style.setProperty('--i', i);
+      container.appendChild(c);
+    }
+
+    // theme toggle
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+      const body = document.body;
+      const current = body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', next);
+      toggleBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+    });
+
+    // mouse move interaction
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      container.style.transform = `rotateY(${x * 20}deg) rotateX(${y * -20}deg)`;
+    });
+  </script>
+</body>
+</html>
